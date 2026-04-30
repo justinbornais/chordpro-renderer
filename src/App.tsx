@@ -135,26 +135,24 @@ export default function App() {
           </p>
         </div>
         <div className="hero-actions">
+          <label className="transpose-label" for="transpose-key">
+            Transpose
+          </label>
           <div className="hero-action-row">
-            <div className="transpose-control">
-              <label className="transpose-label" for="transpose-key">
-                Transpose
-              </label>
-              <select
-                id="transpose-key"
-                className="transpose-select"
-                value={appliedTargetKey}
-                onInput={(event) => setTargetKey((event.target as HTMLSelectElement).value)}
-                disabled={!songKey}
-              >
-                <option value="">{songKey ? `Original (${songKey.canonical})` : 'Add {key: ...} to enable'}</option>
-                {transposeOptions.map((option) => (
-                  <option key={option} value={option}>
-                    {option}
-                  </option>
-                ))}
-              </select>
-            </div>
+            <select
+              id="transpose-key"
+              className="transpose-select"
+              value={appliedTargetKey}
+              onInput={(event) => setTargetKey((event.target as HTMLSelectElement).value)}
+              disabled={!songKey}
+            >
+              <option value="">{songKey ? `Original (${songKey.canonical})` : 'Add {key: ...} to enable'}</option>
+              {transposeOptions.map((option) => (
+                <option key={option} value={option}>
+                  {option}
+                </option>
+              ))}
+            </select>
             <button className="secondary-button" type="button" onClick={() => setSource(SAMPLE_CHORDPRO)}>
               Reset sample
             </button>

@@ -112,22 +112,18 @@ button {
   gap: 12px;
 }
 
-.transpose-control {
-  display: flex;
-  min-width: 220px;
-  flex-direction: column;
-  gap: 6px;
-}
-
 .transpose-label {
+  width: 100%;
   color: var(--accent);
   font-family: "Trebuchet MS", "Lucida Sans Unicode", "Lucida Grande", "Lucida Sans", Arial, sans-serif;
   font-size: 0.75rem;
   letter-spacing: 0.12em;
   text-transform: uppercase;
+  text-align: left;
 }
 
 .transpose-select {
+  min-width: 220px;
   min-height: 47px;
   border: 1px solid var(--border-strong);
   border-radius: 14px;
@@ -351,10 +347,6 @@ button {
   .hero-actions {
     width: 100%;
     align-items: stretch;
-  }
-
-  .transpose-control {
-    width: 100%;
   }
 
   .hero-action-row {
