@@ -1,0 +1,419 @@
+:root {
+  color-scheme: light;
+  font-family: "Iowan Old Style", "Palatino Linotype", "Book Antiqua", Georgia, serif;
+  line-height: 1.5;
+  font-weight: 400;
+  color: #201c18;
+  background: #ece7dd;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  --page: #f7f3ec;
+  --panel: #fbf8f2;
+  --panel-strong: #fffdfa;
+  --border: #cfc3b0;
+  --border-strong: #89745a;
+  --ink-soft: #5f564c;
+  --accent: #734d26;
+  --accent-soft: #eee2d1;
+  --warning: #9d3d2d;
+  --shadow: 0 20px 50px rgba(44, 31, 15, 0.08);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#app {
+  min-height: 100%;
+}
+
+body {
+  margin: 0;
+}
+
+button,
+textarea,
+input {
+  font: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+.app-shell {
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 32px;
+}
+
+.hero {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 24px;
+  margin-bottom: 24px;
+}
+
+.eyebrow,
+.panel-kicker,
+.section-label,
+.status,
+.song-directive,
+.song-meta dt {
+  font-family: "Trebuchet MS", "Lucida Sans Unicode", "Lucida Grande", "Lucida Sans", Arial, sans-serif;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.eyebrow,
+.panel-kicker {
+  margin: 0 0 10px;
+  color: var(--accent);
+  font-size: 0.75rem;
+}
+
+.hero h1,
+.panel-header h2,
+.song-header h3 {
+  margin: 0;
+  font-weight: 600;
+  letter-spacing: -0.03em;
+}
+
+.hero h1 {
+  max-width: 14ch;
+  font-size: clamp(2.25rem, 4vw, 4.8rem);
+  line-height: 0.95;
+}
+
+.hero-copy {
+  max-width: 56ch;
+  margin: 14px 0 0;
+  color: var(--ink-soft);
+  font-size: 1rem;
+}
+
+.hero-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 12px;
+}
+
+.primary-button,
+.secondary-button {
+  border: 1px solid var(--border-strong);
+  border-radius: 999px;
+  padding: 12px 18px;
+  transition: background-color 160ms ease, color 160ms ease, border-color 160ms ease, transform 160ms ease;
+}
+
+.primary-button {
+  background: var(--accent);
+  color: #fffaf4;
+}
+
+.primary-button:hover:not(:disabled),
+.secondary-button:hover:not(:disabled) {
+  transform: translateY(-1px);
+}
+
+.primary-button:disabled,
+.secondary-button:disabled {
+  cursor: progress;
+  opacity: 0.7;
+}
+
+.secondary-button {
+  background: transparent;
+  color: var(--accent);
+}
+
+.workspace {
+  display: grid;
+  grid-template-columns: minmax(320px, 1fr) minmax(340px, 0.95fr);
+  gap: 24px;
+}
+
+.panel {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 28px;
+  padding: 22px;
+  box-shadow: var(--shadow);
+}
+
+.panel-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 18px;
+}
+
+.panel-header h2 {
+  font-size: 1.45rem;
+}
+
+.panel-note {
+  max-width: 28ch;
+  margin: 0;
+  color: var(--ink-soft);
+  font-size: 0.95rem;
+  text-align: right;
+}
+
+.editor-panel {
+  display: flex;
+  flex-direction: column;
+}
+
+.editor-label {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.editor {
+  width: 100%;
+  min-height: 68vh;
+  padding: 20px;
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  background: var(--panel-strong);
+  color: #1f1b17;
+  font-family: "IBM Plex Mono", "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+  font-size: 0.98rem;
+  line-height: 1.6;
+  resize: vertical;
+}
+
+.editor:focus-visible,
+.primary-button:focus-visible,
+.secondary-button:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.preview-panel {
+  display: flex;
+  flex-direction: column;
+}
+
+.status-cluster {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8px;
+}
+
+.status {
+  margin: 0;
+  color: var(--ink-soft);
+  font-size: 0.74rem;
+}
+
+.status.error {
+  color: var(--warning);
+  letter-spacing: normal;
+  text-transform: none;
+  font-family: inherit;
+  font-size: 0.95rem;
+}
+
+.song-sheet {
+  min-height: 68vh;
+  padding: 30px;
+  border: 1px solid var(--border);
+  border-radius: 22px;
+  background: var(--page);
+}
+
+.song-header {
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--border);
+}
+
+.song-header h3 {
+  font-size: 2rem;
+  line-height: 1.05;
+}
+
+.song-subtitle {
+  margin: 8px 0 0;
+  color: var(--ink-soft);
+  font-style: italic;
+}
+
+.song-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px 20px;
+  margin: 18px 0 0;
+}
+
+.song-meta div {
+  min-width: 90px;
+}
+
+.song-meta dt {
+  margin-bottom: 4px;
+  color: var(--accent);
+  font-size: 0.67rem;
+}
+
+.song-meta dd {
+  margin: 0;
+}
+
+.song-body {
+  margin-top: 20px;
+}
+
+.song-line,
+.song-comment,
+.song-directive {
+  margin: 0;
+}
+
+.song-line,
+.segment,
+.song-comment,
+.song-directive,
+.section-lines {
+  font-family: "IBM Plex Mono", "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+}
+
+.song-line {
+  overflow-x: auto;
+  white-space: nowrap;
+}
+
+.plain-line {
+  white-space: pre-wrap;
+  color: #2a2520;
+}
+
+.chord-line {
+  display: flex;
+  align-items: flex-start;
+  gap: 0;
+}
+
+.segment {
+  display: inline-flex;
+  min-width: 1ch;
+  flex-direction: column;
+  white-space: pre;
+  vertical-align: top;
+}
+
+.segment-chord {
+  min-height: 1.4em;
+  color: var(--accent);
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.segment-lyric {
+  color: #1c1814;
+}
+
+.song-comment {
+  padding: 8px 12px;
+  border-left: 3px solid var(--border-strong);
+  background: var(--accent-soft);
+  color: #4a4035;
+}
+
+.song-directive {
+  color: var(--ink-soft);
+  font-size: 0.78rem;
+}
+
+.song-spacer {
+  height: 14px;
+}
+
+.song-section {
+  margin: 18px 0;
+  padding: 14px 16px 16px;
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.25);
+}
+
+.section-label {
+  margin-bottom: 12px;
+  color: var(--accent);
+  font-size: 0.72rem;
+}
+
+.section-lines {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+@media (max-width: 1024px) {
+  .app-shell {
+    padding: 20px;
+  }
+
+  .hero,
+  .panel-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .panel-note,
+  .status-cluster {
+    text-align: left;
+    align-items: flex-start;
+  }
+
+  .workspace {
+    grid-template-columns: 1fr;
+  }
+
+  .editor,
+  .song-sheet {
+    min-height: 56vh;
+  }
+}
+
+@media (max-width: 640px) {
+  .app-shell {
+    padding: 14px;
+  }
+
+  .panel,
+  .song-sheet,
+  .editor {
+    border-radius: 18px;
+  }
+
+  .song-sheet {
+    padding: 20px;
+  }
+
+  .hero-actions {
+    width: 100%;
+  }
+
+  .primary-button,
+  .secondary-button {
+    flex: 1 1 180px;
+    justify-content: center;
+  }
+}
