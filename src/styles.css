@@ -95,25 +95,19 @@ button {
 }
 
 .hero-actions {
-  display: flex;
-  flex-direction: column;
+  display: grid;
   width: 100%;
-  justify-content: flex-end;
-  align-items: flex-end;
-  gap: 8px;
-}
-
-.hero-action-row {
-  display: flex;
-  width: 100%;
-  flex-wrap: wrap;
-  justify-content: flex-end;
+  grid-template-columns: 220px auto auto;
+  justify-content: end;
   align-items: center;
-  gap: 12px;
+  column-gap: 12px;
+  row-gap: 8px;
 }
 
 .transpose-label {
-  width: 100%;
+  grid-column: 1;
+  grid-row: 1;
+  width: 220px;
   color: var(--accent);
   font-family: "Trebuchet MS", "Lucida Sans Unicode", "Lucida Grande", "Lucida Sans", Arial, sans-serif;
   font-size: 0.75rem;
@@ -123,7 +117,9 @@ button {
 }
 
 .transpose-select {
-  min-width: 220px;
+  grid-column: 1;
+  grid-row: 2;
+  width: 220px;
   min-height: 47px;
   border: 1px solid var(--border-strong);
   border-radius: 14px;
@@ -132,12 +128,26 @@ button {
   color: #1f1b17;
 }
 
+.hero-action-button {
+  grid-row: 2;
+}
+
+.hero-action-button.secondary-button {
+  grid-column: 2;
+}
+
+.hero-action-button.primary-button {
+  grid-column: 3;
+}
+
 .transpose-note {
+  grid-column: 1;
+  grid-row: 3;
   margin: 0;
   color: var(--ink-soft);
   font-size: 0.9rem;
   min-height: 1.35em;
-  width: 100%;
+  width: 220px;
   text-align: left;
 }
 
@@ -345,13 +355,19 @@ button {
   }
 
   .hero-actions {
-    width: 100%;
+    grid-template-columns: 1fr;
+    justify-content: stretch;
     align-items: stretch;
   }
 
-  .hero-action-row {
+  .transpose-label,
+  .transpose-select,
+  .transpose-note,
+  .hero-action-button,
+  .hero-action-button.secondary-button,
+  .hero-action-button.primary-button {
+    grid-column: 1;
     width: 100%;
-    justify-content: stretch;
   }
 
   .primary-button,
