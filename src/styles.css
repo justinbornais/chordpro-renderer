@@ -97,7 +97,38 @@ button {
   display: flex;
   flex-wrap: wrap;
   justify-content: flex-end;
+  align-items: flex-end;
   gap: 12px;
+}
+
+.transpose-control {
+  display: flex;
+  min-width: 220px;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.transpose-label {
+  color: var(--accent);
+  font-family: "Trebuchet MS", "Lucida Sans Unicode", "Lucida Grande", "Lucida Sans", Arial, sans-serif;
+  font-size: 0.75rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.transpose-select {
+  min-height: 47px;
+  border: 1px solid var(--border-strong);
+  border-radius: 14px;
+  padding: 10px 14px;
+  background: var(--panel-strong);
+  color: #1f1b17;
+}
+
+.transpose-note {
+  margin: 0;
+  color: var(--ink-soft);
+  font-size: 0.9rem;
 }
 
 .primary-button,
@@ -195,6 +226,7 @@ button {
 }
 
 .editor:focus-visible,
+.transpose-select:focus-visible,
 .primary-button:focus-visible,
 .secondary-button:focus-visible {
   outline: 2px solid var(--accent);
@@ -302,6 +334,10 @@ button {
   }
 
   .hero-actions {
+    width: 100%;
+  }
+
+  .transpose-control {
     width: 100%;
   }
 

@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'preact/hooks';
 import { getChordSketch } from './chordsketch';
+import { getSongKey, getTransposeOptions, transposeChordPro } from './transpose';
 
 const SAMPLE_CHORDPRO = `{title: Midnight Train}
 {subtitle: Practice Draft}
@@ -33,6 +34,7 @@ type ValidationError = {
 
 export default function App() {
   const [source, setSource] = useState(SAMPLE_CHORDPRO);
+  const [targetKey, setTargetKey] = useState('');
   const [previewMarkup, setPreviewMarkup] = useState(buildStatusPreview('Loading the ChordPro renderer...'));
   const [validationErrors, setValidationErrors] = useState<ValidationError[]>([]);
   const [rendererVersion, setRendererVersion] = useState<string | null>(null);
@@ -40,6 +42,16 @@ export default function App() {
   const [isExporting, setIsExporting] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const requestVersionRef = useRef(0);
+  const songKey = getSongKey(source);
+  const transposeOptions = songKey ? getTransposeOptions(songKey.minor) : [];
+  const appliedTargetKey = songKey && transposeOptions.includes(targetKey) ? targetKey : '';
+  const renderedSource = appliedTargetKey ? transposeChordPro(source, appliedTargetKey) : source;
+
+  useEffect(() => {
+    if (!songKey || (targetKey && !transposeOptions.includes(targetKey))) {
+      setTargetKey('');
+    }
+  }, [songKey, targetKey, transposeOptions]);
 
   useEffect(() => {
     const requestVersion = requestVersionRef.current + 1;
@@ -65,7 +77,7 @@ export default function App() {
           return;
         }
 
-        setPreviewMarkup(chordSketch.render_html(source));
+        setPreviewMarkup(chordSketch.render_html(renderedSource));
       } catch (error) {
         const message = error instanceof Error ? error.message : 'Unable to render the current document.';
         if (disposed || requestVersion !== requestVersionRef.current) {
@@ -85,7 +97,7 @@ export default function App() {
     return () => {
       disposed = true;
     };
-  }, [source]);
+  }, [renderedSource, source]);
 
   async function handlePdfExport() {
     if (isExporting) {
@@ -102,7 +114,7 @@ export default function App() {
 
     try {
       const chordSketch = await getChordSketch();
-      const pdfBytes = chordSketch.render_pdf(source);
+      const pdfBytes = chordSketch.render_pdf(renderedSource);
       downloadPdf(pdfBytes, toFileName(source));
     } catch (error) {
       const message = error instanceof Error ? error.message : 'Unable to export the current document.';
@@ -124,6 +136,32 @@ export default function App() {
           </p>
         </div>
         <div className="hero-actions">
+          <div className="transpose-control">
+            <label className="transpose-label" for="transpose-key">
+              Transpose
+            </label>
+            <select
+              id="transpose-key"
+              className="transpose-select"
+              value={appliedTargetKey}
+              onInput={(event) => setTargetKey((event.target as HTMLSelectElement).value)}
+              disabled={!songKey}
+            >
+              <option value="">{songKey ? `Original (${songKey.canonical})` : 'Add {key: ...} to enable'}</option>
+              {transposeOptions.map((option) => (
+                <option key={option} value={option}>
+                  {option}
+                </option>
+              ))}
+            </select>
+            <p className="transpose-note">
+              {songKey
+                ? appliedTargetKey
+                  ? `${songKey.canonical} to ${appliedTargetKey}`
+                  : `Current key ${songKey.canonical}`
+                : 'Transposition needs a {key: ...} directive.'}
+            </p>
+          </div>
           <button className="secondary-button" type="button" onClick={() => setSource(SAMPLE_CHORDPRO)}>
             Reset sample
           </button>
@@ -170,6 +208,7 @@ export default function App() {
               {errorMessage ? <p className="status error">{errorMessage}</p> : null}
               <p className="status">{isRendering ? 'Rendering...' : 'Live render'}</p>
               {rendererVersion ? <p className="status">ChordSketch WASM {rendererVersion}</p> : null}
+              {songKey ? <p className="status">Key {appliedTargetKey || songKey.canonical}</p> : null}
             </div>
           </div>
 
