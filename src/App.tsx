@@ -127,9 +127,8 @@ export default function App() {
   return (
     <div className="app-shell">
       <header className="hero">
-        <div>
-          <p className="eyebrow">ChordPro Playground</p>
-          <h1>Write, preview, and export songs in one page.</h1>
+        <div className="hero-heading">
+          <h1>ChordPro Playground</h1>
           <p className="hero-copy">
             The editor uses the ChordSketch WASM engine to validate, render, and export your ChordPro sheet with
             the real ChordPro layout pipeline.

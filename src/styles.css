@@ -52,13 +52,11 @@ button {
 
 .hero {
   display: flex;
-  align-items: flex-end;
-  justify-content: space-between;
+  flex-direction: column;
   gap: 24px;
   margin-bottom: 24px;
 }
 
-.eyebrow,
 .panel-kicker,
 .status {
   font-family: "Trebuchet MS", "Lucida Sans Unicode", "Lucida Grande", "Lucida Sans", Arial, sans-serif;
@@ -66,11 +64,14 @@ button {
   text-transform: uppercase;
 }
 
-.eyebrow,
 .panel-kicker {
   margin: 0 0 10px;
   color: var(--accent);
   font-size: 0.75rem;
+}
+
+.hero-heading {
+  width: 100%;
 }
 
 .hero h1,
@@ -81,20 +82,21 @@ button {
 }
 
 .hero h1 {
-  max-width: 14ch;
   font-size: clamp(2.25rem, 4vw, 4.8rem);
   line-height: 0.95;
+  text-align: center;
 }
 
 .hero-copy {
-  max-width: 56ch;
   margin: 14px 0 0;
   color: var(--ink-soft);
   font-size: 1rem;
+  text-align: left;
 }
 
 .hero-actions {
   display: flex;
+  width: 100%;
   flex-wrap: wrap;
   justify-content: flex-end;
   align-items: flex-end;
