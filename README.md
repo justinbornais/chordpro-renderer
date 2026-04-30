@@ -1,6 +1,6 @@
 # ChordPro Playground
 
-A small Preact + TypeScript web application for writing ChordPro, previewing the rendered song sheet live, and exporting the preview as a PDF.
+A small Preact + TypeScript web application for writing ChordPro, previewing the rendered song sheet live, and exporting the rendered document as a PDF.
 
 ## Scripts
 
@@ -11,7 +11,7 @@ A small Preact + TypeScript web application for writing ChordPro, previewing the
 
 ## Features
 
-- Live ChordPro parsing and preview
-- Support for common metadata directives like title, subtitle, artist, key, and tempo
-- Support for comments and grouped sections such as chorus, verse, bridge, and tab
-- Client-side PDF export of the rendered sheet
+- Live rendering through the ChordSketch WebAssembly engine
+- ChordPro validation with line and column error feedback
+- Browser preview using the renderer's real HTML output
+- PDF export using the renderer's generated PDF bytes instead of a DOM screenshot

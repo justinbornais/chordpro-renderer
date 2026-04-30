@@ -1,5 +1,5 @@
-import { useMemo, useRef, useState } from 'preact/hooks';
-import { parseChordPro, type SongBlock, type SongDocument, type SongSectionBlock } from './chordpro';
+import { useEffect, useRef, useState } from 'preact/hooks';
+import { getChordSketch } from './chordsketch';
 
 const SAMPLE_CHORDPRO = `{title: Midnight Train}
 {subtitle: Practice Draft}
@@ -25,16 +25,75 @@ This last line has no chords, just lyrics.`;
 
 const DOWNLOAD_NAME_FALLBACK = 'chordpro-song';
 
+type ValidationError = {
+  line: number;
+  column: number;
+  message: string;
+};
+
 export default function App() {
   const [source, setSource] = useState(SAMPLE_CHORDPRO);
+  const [previewMarkup, setPreviewMarkup] = useState(buildStatusPreview('Loading the ChordPro renderer...'));
+  const [validationErrors, setValidationErrors] = useState<ValidationError[]>([]);
+  const [rendererVersion, setRendererVersion] = useState<string | null>(null);
+  const [isRendering, setIsRendering] = useState(true);
   const [isExporting, setIsExporting] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
-  const previewRef = useRef<HTMLElement | null>(null);
+  const requestVersionRef = useRef(0);
 
-  const document = useMemo(() => parseChordPro(source), [source]);
+  useEffect(() => {
+    const requestVersion = requestVersionRef.current + 1;
+    requestVersionRef.current = requestVersion;
+    let disposed = false;
+
+    setIsRendering(true);
+    setErrorMessage(null);
+
+    void (async () => {
+      try {
+        const chordSketch = await getChordSketch();
+        if (disposed || requestVersion !== requestVersionRef.current) {
+          return;
+        }
+
+        const errors = chordSketch.validate(source) as ValidationError[];
+        setRendererVersion(chordSketch.version());
+        setValidationErrors(errors);
+
+        if (errors.length > 0) {
+          setPreviewMarkup(buildValidationPreview(errors));
+          return;
+        }
+
+        setPreviewMarkup(chordSketch.render_html(source));
+      } catch (error) {
+        const message = error instanceof Error ? error.message : 'Unable to render the current document.';
+        if (disposed || requestVersion !== requestVersionRef.current) {
+          return;
+        }
+
+        setErrorMessage(message);
+        setValidationErrors([]);
+        setPreviewMarkup(buildStatusPreview(message));
+      } finally {
+        if (!disposed && requestVersion === requestVersionRef.current) {
+          setIsRendering(false);
+        }
+      }
+    })();
+
+    return () => {
+      disposed = true;
+    };
+  }, [source]);
 
   async function handlePdfExport() {
-    if (!previewRef.current || isExporting) {
+    if (isExporting) {
+      return;
+    }
+
+    if (validationErrors.length > 0) {
+      setErrorMessage('Fix validation errors before downloading the PDF.');
       return;
     }
 
@@ -42,8 +101,9 @@ export default function App() {
     setErrorMessage(null);
 
     try {
-      const { exportElementToPdf } = await import('./pdf');
-      await exportElementToPdf(previewRef.current, toFileName(document));
+      const chordSketch = await getChordSketch();
+      const pdfBytes = chordSketch.render_pdf(source);
+      downloadPdf(pdfBytes, toFileName(source));
     } catch (error) {
       const message = error instanceof Error ? error.message : 'Unable to export the current document.';
       setErrorMessage(message);
@@ -59,15 +119,20 @@ export default function App() {
           <p className="eyebrow">ChordPro Playground</p>
           <h1>Write, preview, and export songs in one page.</h1>
           <p className="hero-copy">
-            The editor understands common ChordPro directives, renders chord sheets instantly, and exports the
-            current preview to PDF.
+            The editor uses the ChordSketch WASM engine to validate, render, and export your ChordPro sheet with
+            the real ChordPro layout pipeline.
           </p>
         </div>
         <div className="hero-actions">
           <button className="secondary-button" type="button" onClick={() => setSource(SAMPLE_CHORDPRO)}>
             Reset sample
           </button>
-          <button className="primary-button" type="button" onClick={handlePdfExport} disabled={isExporting}>
+          <button
+            className="primary-button"
+            type="button"
+            onClick={handlePdfExport}
+            disabled={isExporting || isRendering || validationErrors.length > 0}
+          >
             {isExporting ? 'Exporting PDF...' : 'Download PDF'}
           </button>
         </div>
@@ -103,90 +168,113 @@ export default function App() {
             </div>
             <div className="status-cluster">
               {errorMessage ? <p className="status error">{errorMessage}</p> : null}
-              <p className="status">Live render</p>
+              <p className="status">{isRendering ? 'Rendering...' : 'Live render'}</p>
+              {rendererVersion ? <p className="status">ChordSketch WASM {rendererVersion}</p> : null}
             </div>
           </div>
 
-          <article className="song-sheet" ref={previewRef}>
-            <header className="song-header">
-              <h3>{document.title}</h3>
-              {document.subtitle ? <p className="song-subtitle">{document.subtitle}</p> : null}
-              <dl className="song-meta">
-                {Object.entries(document.metadata).map(([key, value]) => (
-                  <div key={key}>
-                    <dt>{key}</dt>
-                    <dd>{value}</dd>
-                  </div>
-                ))}
-              </dl>
-            </header>
+          <div className="song-sheet">
+            <iframe className="song-frame" title="Rendered ChordPro preview" sandbox="" srcdoc={previewMarkup} />
+          </div>
 
-            <div className="song-body">{document.blocks.map((block, index) => renderBlock(block, `${block.type}-${index}`))}</div>
-          </article>
+          {validationErrors.length > 0 ? (
+            <ol className="validation-list">
+              {validationErrors.map((issue) => (
+                <li key={`${issue.line}-${issue.column}-${issue.message}`}>
+                  Line {issue.line}, column {issue.column}: {issue.message}
+                </li>
+              ))}
+            </ol>
+          ) : null}
         </section>
       </main>
     </div>
   );
 }
 
-function renderBlock(block: SongBlock, key: string) {
-  switch (block.type) {
-    case 'line':
-      if (block.variant === 'plain') {
-        return (
-          <p className="song-line plain-line" key={key}>
-            {block.text}
-          </p>
-        );
-      }
-
-      return (
-        <p className="song-line chord-line" key={key}>
-          {block.segments?.map((segment, index) => (
-            <span className="segment" key={`${key}-${index}`} style={{ width: `${segment.width}ch` }}>
-              <span className="segment-chord">{segment.chord ?? '\u00a0'}</span>
-              <span className="segment-lyric">{segment.lyric || '\u00a0'}</span>
-            </span>
-          ))}
-        </p>
-      );
-
-    case 'comment':
-      return (
-        <p className="song-comment" key={key}>
-          {block.text}
-        </p>
-      );
-
-    case 'directive':
-      return (
-        <p className="song-directive" key={key}>
-          {block.text}
-        </p>
-      );
-
-    case 'spacer':
-      return <div className="song-spacer" key={key} aria-hidden="true" />;
-
-    case 'section':
-      return <SectionBlock block={block} key={key} />;
-  }
+function downloadPdf(pdfBytes: Uint8Array, fileName: string) {
+  const blob = new Blob([Uint8Array.from(pdfBytes).buffer], { type: 'application/pdf' });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = `${fileName}.pdf`;
+  link.click();
+  URL.revokeObjectURL(url);
 }
 
-function SectionBlock({ block }: { block: SongSectionBlock }) {
-  return (
-    <section className="song-section">
-      <div className="section-label">{block.label}</div>
-      <div className="section-lines">{block.lines.map((line, index) => renderBlock(line, `${block.label}-${index}`))}</div>
-    </section>
-  );
+function buildStatusPreview(message: string) {
+  return `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <style>
+    body {
+      margin: 0;
+      padding: 2rem;
+      font-family: Georgia, serif;
+      color: #3d3327;
+    }
+  </style>
+</head>
+<body>
+  <p>${escapeHtml(message)}</p>
+</body>
+</html>`;
 }
 
-function toFileName(document: SongDocument) {
-  const sanitized = document.title
+function buildValidationPreview(issues: ValidationError[]) {
+  const items = issues
+    .map((issue) => `<li>Line ${issue.line}, column ${issue.column}: ${escapeHtml(issue.message)}</li>`)
+    .join('');
+
+  return `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <style>
+    body {
+      margin: 0;
+      padding: 2rem;
+      font-family: Georgia, serif;
+      color: #3d3327;
+    }
+    h1 {
+      margin: 0 0 1rem;
+      font-size: 1.25rem;
+    }
+    ol {
+      padding-left: 1.25rem;
+      margin: 0;
+    }
+    li + li {
+      margin-top: 0.5rem;
+    }
+  </style>
+</head>
+<body>
+  <h1>ChordPro validation issues</h1>
+  <ol>${items}</ol>
+</body>
+</html>`;
+}
+
+function toFileName(source: string) {
+  const titleMatch = source.match(/^\{\s*(?:title|t)\s*:\s*([^}]+)\}$/im);
+  const title = titleMatch?.[1]?.trim() ?? DOWNLOAD_NAME_FALLBACK;
+
+  const sanitized = title
     .toLowerCase()
     .replace(/[^a-z0-9]+/g, '-')
     .replace(/^-+|-+$/g, '');
 
   return sanitized || DOWNLOAD_NAME_FALLBACK;
+}
+
+function escapeHtml(value: string) {
+  return value
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
 }

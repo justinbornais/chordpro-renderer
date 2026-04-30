@@ -9,8 +9,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "html2canvas": "^1.4.1",
-    "jspdf": "^3.0.3",
+    "@chordsketch/wasm": "^0.3.0",
     "preact": "^10.26.4"
   },
   "devDependencies": {

@@ -60,10 +60,7 @@ button {
 
 .eyebrow,
 .panel-kicker,
-.section-label,
-.status,
-.song-directive,
-.song-meta dt {
+.status {
   font-family: "Trebuchet MS", "Lucida Sans Unicode", "Lucida Grande", "Lucida Sans", Arial, sans-serif;
   letter-spacing: 0.12em;
   text-transform: uppercase;
@@ -77,8 +74,7 @@ button {
 }
 
 .hero h1,
-.panel-header h2,
-.song-header h3 {
+.panel-header h2 {
   margin: 0;
   font-weight: 600;
   letter-spacing: -0.03em;
@@ -233,136 +229,29 @@ button {
 
 .song-sheet {
   min-height: 68vh;
-  padding: 30px;
+  padding: 0;
   border: 1px solid var(--border);
   border-radius: 22px;
   background: var(--page);
+  overflow: hidden;
 }
 
-.song-header {
-  padding-bottom: 16px;
-  border-bottom: 1px solid var(--border);
+.song-frame {
+  display: block;
+  width: 100%;
+  min-height: 68vh;
+  border: 0;
+  background: #ffffff;
 }
 
-.song-header h3 {
-  font-size: 2rem;
-  line-height: 1.05;
+.validation-list {
+  margin: 14px 0 0;
+  padding-left: 20px;
+  color: var(--warning);
 }
 
-.song-subtitle {
-  margin: 8px 0 0;
-  color: var(--ink-soft);
-  font-style: italic;
-}
-
-.song-meta {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 14px 20px;
-  margin: 18px 0 0;
-}
-
-.song-meta div {
-  min-width: 90px;
-}
-
-.song-meta dt {
-  margin-bottom: 4px;
-  color: var(--accent);
-  font-size: 0.67rem;
-}
-
-.song-meta dd {
-  margin: 0;
-}
-
-.song-body {
-  margin-top: 20px;
-}
-
-.song-line,
-.song-comment,
-.song-directive {
-  margin: 0;
-}
-
-.song-line,
-.segment,
-.song-comment,
-.song-directive,
-.section-lines {
-  font-family: "IBM Plex Mono", "SFMono-Regular", Consolas, "Liberation Mono", monospace;
-}
-
-.song-line {
-  overflow-x: auto;
-  white-space: nowrap;
-}
-
-.plain-line {
-  white-space: pre-wrap;
-  color: #2a2520;
-}
-
-.chord-line {
-  display: flex;
-  align-items: flex-start;
-  gap: 0;
-}
-
-.segment {
-  display: inline-flex;
-  min-width: 1ch;
-  flex-direction: column;
-  white-space: pre;
-  vertical-align: top;
-}
-
-.segment-chord {
-  min-height: 1.4em;
-  color: var(--accent);
-  font-size: 0.85rem;
-  font-weight: 600;
-}
-
-.segment-lyric {
-  color: #1c1814;
-}
-
-.song-comment {
-  padding: 8px 12px;
-  border-left: 3px solid var(--border-strong);
-  background: var(--accent-soft);
-  color: #4a4035;
-}
-
-.song-directive {
-  color: var(--ink-soft);
-  font-size: 0.78rem;
-}
-
-.song-spacer {
-  height: 14px;
-}
-
-.song-section {
-  margin: 18px 0;
-  padding: 14px 16px 16px;
-  border: 1px solid var(--border);
-  border-radius: 18px;
-  background: rgba(255, 255, 255, 0.25);
-}
-
-.section-label {
-  margin-bottom: 12px;
-  color: var(--accent);
-  font-size: 0.72rem;
-}
-
-.section-lines {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
+.validation-list li + li {
+  margin-top: 8px;
 }
 
 @media (max-width: 1024px) {
@@ -387,7 +276,8 @@ button {
   }
 
   .editor,
-  .song-sheet {
+  .song-sheet,
+  .song-frame {
     min-height: 56vh;
   }
 }
@@ -405,6 +295,10 @@ button {
 
   .song-sheet {
     padding: 20px;
+  }
+
+  .song-frame {
+    min-height: 52vh;
   }
 
   .hero-actions {
