@@ -135,43 +135,45 @@ export default function App() {
           </p>
         </div>
         <div className="hero-actions">
-          <div className="transpose-control">
-            <label className="transpose-label" for="transpose-key">
-              Transpose
-            </label>
-            <select
-              id="transpose-key"
-              className="transpose-select"
-              value={appliedTargetKey}
-              onInput={(event) => setTargetKey((event.target as HTMLSelectElement).value)}
-              disabled={!songKey}
+          <div className="hero-action-row">
+            <div className="transpose-control">
+              <label className="transpose-label" for="transpose-key">
+                Transpose
+              </label>
+              <select
+                id="transpose-key"
+                className="transpose-select"
+                value={appliedTargetKey}
+                onInput={(event) => setTargetKey((event.target as HTMLSelectElement).value)}
+                disabled={!songKey}
+              >
+                <option value="">{songKey ? `Original (${songKey.canonical})` : 'Add {key: ...} to enable'}</option>
+                {transposeOptions.map((option) => (
+                  <option key={option} value={option}>
+                    {option}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <button className="secondary-button" type="button" onClick={() => setSource(SAMPLE_CHORDPRO)}>
+              Reset sample
+            </button>
+            <button
+              className="primary-button"
+              type="button"
+              onClick={handlePdfExport}
+              disabled={isExporting || isRendering || validationErrors.length > 0}
             >
-              <option value="">{songKey ? `Original (${songKey.canonical})` : 'Add {key: ...} to enable'}</option>
-              {transposeOptions.map((option) => (
-                <option key={option} value={option}>
-                  {option}
-                </option>
-              ))}
-            </select>
-            <p className="transpose-note">
-              {songKey
-                ? appliedTargetKey
-                  ? `${songKey.canonical} to ${appliedTargetKey}`
-                  : `Current key ${songKey.canonical}`
-                : 'Transposition needs a {key: ...} directive.'}
-            </p>
+              {isExporting ? 'Exporting PDF...' : 'Download PDF'}
+            </button>
           </div>
-          <button className="secondary-button" type="button" onClick={() => setSource(SAMPLE_CHORDPRO)}>
-            Reset sample
-          </button>
-          <button
-            className="primary-button"
-            type="button"
-            onClick={handlePdfExport}
-            disabled={isExporting || isRendering || validationErrors.length > 0}
-          >
-            {isExporting ? 'Exporting PDF...' : 'Download PDF'}
-          </button>
+          <p className="transpose-note">
+            {songKey
+              ? appliedTargetKey
+                ? `${songKey.canonical} to ${appliedTargetKey}`
+                : `Current key ${songKey.canonical}`
+              : 'Transposition needs a {key: ...} directive.'}
+          </p>
         </div>
       </header>
 
